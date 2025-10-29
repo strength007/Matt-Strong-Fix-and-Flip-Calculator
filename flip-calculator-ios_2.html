@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Flip Calculator">
+    <title>House Flip Calculator</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: #333;
+        }
+        .app-container {
+            max-width: 500px;
+            margin: 0 auto;
+        }
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 20px;
+            padding: 20px 0;
+        }
+        .header h1 {
+            font-size: 28px;
+            margin-bottom: 5px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+        .header p {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+        .card {
+            background: white;
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 16px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .card-header {
+            font-size: 18px;
+            font-weight: 700;
+            color: #667eea;
+            margin-bottom: 16px;
+            padding-bottom: 12px;
+            border-bottom: 2px solid #e8eaf6;
+        }
+        .input-group {
+            margin-bottom: 16px;
+        }
+        .input-label {
+            display: block;
+            font-size: 14px;
+            font-weight: 600;
+            color: #555;
+            margin-bottom: 6px;
+        }
+        .input-field, .select-field {
+            width: 100%;
+            padding: 12px;
+            font-size: 16px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            background: #f8f9fa;
+            transition: all 0.3s;
+        }
+        .input-field:focus, .select-field:focus {
+            outline: none;
+            border-color: #667eea;
+            background: white;
+        }
+        .result-card {
+            background: linear-gradient(135deg, #70AD47 0%, #5a8f38 100%);
+            color: white;
+            border-radius: 16px;
+            padding: 24px;
+            margin-bottom: 16px;
+            text-align: center;
+            box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+        }
+        .result-label {
+            font-size: 14px;
+            opacity: 0.95;
+            margin-bottom: 8px;
+            font-weight: 600;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+        .result-value {
+            font-size: 42px;
+            font-weight: 800;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+        .result-negative {
+            background: linear-gradient(135deg, #ef5350 0%, #d32f2f 100%);
+        }
+        .warning-card {
+            background: linear-gradient(135deg, #FFC000 0%, #ff9800 100%);
+        }
+        .calc-button {
+            width: 100%;
+            padding: 16px;
+            font-size: 18px;
+            font-weight: 700;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            margin-top: 10px;
+            cursor: pointer;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            -webkit-tap-highlight-color: transparent;
+        }
+        .calc-button:active {
+            transform: scale(0.98);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+        .metric-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        .metric-row:last-child {
+            border-bottom: none;
+        }
+        .metric-label {
+            font-size: 14px;
+            color: #666;
+            font-weight: 500;
+        }
+        .metric-value {
+            font-size: 16px;
+            font-weight: 700;
+            color: #333;
+        }
+        .metric-value.positive {
+            color: #70AD47;
+        }
+        .metric-value.negative {
+            color: #ef5350;
+        }
+        .rule-card {
+            background: linear-gradient(135deg, #FFF9E6 0%, #FFF3CC 100%);
+            border: 2px solid #FFE599;
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 12px;
+        }
+        .rule-title {
+            font-size: 14px;
+            font-weight: 700;
+            color: #996600;
+            margin-bottom: 8px;
+        }
+        .rule-value {
+            font-size: 24px;
+            font-weight: 800;
+            color: #CC7A00;
+        }
+        .collapsible-header {
+            background: #f5f5f5;
+            padding: 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: 600;
+            color: #555;
+            user-select: none;
+            transition: background 0.2s;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .collapsible-header:active {
+            background: #e8e8e8;
+        }
+        .collapsible-content {
+            padding: 12px 0;
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease-out;
+        }
+        .collapsible-content.open {
+            max-height: 1000px;
+        }
+        .toggle-icon {
+            transition: transform 0.3s;
+        }
+        .toggle-icon.open {
+            transform: rotate(180deg);
+        }
+        .footer {
+            text-align: center;
+            color: white;
+            opacity: 0.8;
+            padding: 20px;
+            font-size: 12px;
+        }
+        @media (max-width: 480px) {
+            .result-value {
+                font-size: 36px;
+            }
+            .card {
+                padding: 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <div class="header">
+            <h1>🏠 Flip Calculator</h1>
+            <p>Smart Deal Analysis</p>
+            <p id="jsTest" style="color: red; font-size: 12px;">⚠️ JavaScript Loading...</p>
+        </div>
+
+        <div class="result-card" id="profitCard">
+            <div class="result-label">Net Profit</div>
+            <div class="result-value" id="netProfit">$0</div>
+        </div>
+
+        <div class="result-card warning-card">
+            <div class="result-label">Cash Required</div>
+            <div class="result-value" id="cashRequired">$0</div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">📝 Deal Inputs</div>
+            
+            <div class="input-group">
+                <label class="input-label">After Repair Value (ARV)</label>
+                <input type="number" class="input-field" id="arv" value="650000" onchange="calculate()">
+            </div>
+
+            <div class="input-group">
+                <label class="input-label">Purchase Price</label>
+                <input type="number" class="input-field" id="purchasePrice" value="375000" onchange="calculate()">
+            </div>
+
+            <div class="input-group">
+                <label class="input-label">Square Feet</label>
+                <input type="number" class="input-field" id="squareFeet" value="3584" onchange="calculate()">
+            </div>
+
+            <div class="input-group">
+                <label class="input-label">Repair Level</label>
+                <select class="select-field" id="repairLevel" onchange="toggleRehabInput(); calculate();">
+                    <option value="Basic">Basic ($40/SF)</option>
+                    <option value="Medium">Medium ($55/SF)</option>
+                    <option value="Everything">Everything ($90/SF)</option>
+                    <option value="Other" selected>Other (Custom)</option>
+                </select>
+            </div>
+
+            <div class="input-group" id="exactRehabGroup">
+                <label class="input-label">Exact Rehab Amount</label>
+                <input type="number" class="input-field" id="exactRehab" value="200000" onchange="calculate()">
+            </div>
+
+            <div class="input-group">
+                <label class="input-label">Annual Interest Rate (%)</label>
+                <input type="number" step="0.1" class="input-field" id="interestRate" value="12" onchange="calculate()">
+            </div>
+
+            <div class="input-group">
+                <label class="input-label">Loan Points (%)</label>
+                <input type="number" step="0.1" class="input-field" id="loanPoints" value="2" onchange="calculate()">
+            </div>
+
+            <div class="input-group">
+                <label class="input-label">Down Payment (%)</label>
+                <input type="number" step="1" class="input-field" id="downPayment" value="15" onchange="calculate()">
+            </div>
+
+            <div class="input-group">
+                <label class="input-label">Hold Time (Months)</label>
+                <input type="number" class="input-field" id="holdMonths" value="6" onchange="calculate()">
+            </div>
+
+            <div class="input-group">
+                <label class="input-label">Seller Agent Commission (%)</label>
+                <input type="number" step="0.1" class="input-field" id="sellerCommission" value="3" onchange="calculate()">
+            </div>
+
+            <div class="input-group">
+                <label class="input-label">Buyer Closing Costs (%)</label>
+                <input type="number" step="0.1" class="input-field" id="buyerCC" value="3" onchange="calculate()">
+            </div>
+
+            <button class="calc-button" onclick="calculate()">
+                Calculate 💰
+            </button>
+        </div>
+
+        <div class="card">
+            <div class="collapsible-header" onclick="toggleSection('metrics')">
+                <span>📊 Key Metrics</span>
+                <span class="toggle-icon" id="metricsIcon">▼</span>
+            </div>
+            <div class="collapsible-content" id="metricsContent">
+                <div class="metric-row">
+                    <span class="metric-label">Total Rehab Cost</span>
+                    <span class="metric-value" id="totalRehab">$0</span>
+                </div>
+                <div class="metric-row">
+                    <span class="metric-label">Profit % of Price</span>
+                    <span class="metric-value" id="profitPctPrice">0%</span>
+                </div>
+                <div class="metric-row">
+                    <span class="metric-label">Profit % of Rehab</span>
+                    <span class="metric-value" id="profitPctRehab">0%</span>
+                </div>
+                <div class="metric-row">
+                    <span class="metric-label">Price per SF</span>
+                    <span class="metric-value" id="pricePerSF">$0</span>
+                </div>
+                <div class="metric-row">
+                    <span class="metric-label">Total All-In Cost</span>
+                    <span class="metric-value" id="totalCost">$0</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="collapsible-header" onclick="toggleSection('details')">
+                <span>💰 Cost Breakdown</span>
+                <span class="toggle-icon" id="detailsIcon">▼</span>
+            </div>
+            <div class="collapsible-content" id="detailsContent">
+                <div class="metric-row">
+                    <span class="metric-label">Purchase Price</span>
+                    <span class="metric-value" id="detailPurchase">$0</span>
+                </div>
+                <div class="metric-row">
+                    <span class="metric-label">Rehab Cost</span>
+                    <span class="metric-value" id="detailRehab">$0</span>
+                </div>
+                <div class="metric-row">
+                    <span class="metric-label">Financing Cost</span>
+                    <span class="metric-value" id="detailFinancing">$0</span>
+                </div>
+                <div class="metric-row">
+                    <span class="metric-label">Purchase Costs</span>
+                    <span class="metric-value" id="detailPurchaseCosts">$0</span>
+                </div>
+                <div class="metric-row">
+                    <span class="metric-label">Sales Costs</span>
+                    <span class="metric-value" id="detailSalesCosts">$0</span>
+                </div>
+                <div class="metric-row">
+                    <span class="metric-label">Seller Agent</span>
+                    <span class="metric-value" id="detailSeller">$0</span>
+                </div>
+                <div class="metric-row">
+                    <span class="metric-label">Buyer Closing</span>
+                    <span class="metric-value" id="detailBuyer">$0</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="collapsible-header" onclick="toggleSection('rules')">
+                <span>📏 Investment Rules</span>
+                <span class="toggle-icon" id="rulesIcon">▼</span>
+            </div>
+            <div class="collapsible-content" id="rulesContent">
+                <div class="rule-card">
+                    <div class="rule-title">80% Rule Target</div>
+                    <div class="rule-value" id="target80">$0</div>
+                    <div class="metric-row" style="border-bottom: none; padding-top: 8px;">
+                        <span class="metric-label">vs Your Price</span>
+                        <span class="metric-value" id="vs80">$0</span>
+                    </div>
+                    <div class="metric-row" style="border-bottom: none; padding-top: 4px;">
+                        <span class="metric-label">Profit at 80%</span>
+                        <span class="metric-value" id="profit80">$0</span>
+                    </div>
+                </div>
+
+                <div class="rule-card">
+                    <div class="rule-title">70% Rule Target</div>
+                    <div class="rule-value" id="target70">$0</div>
+                    <div class="metric-row" style="border-bottom: none; padding-top: 8px;">
+                        <span class="metric-label">vs Your Price</span>
+                        <span class="metric-value" id="vs70">$0</span>
+                    </div>
+                    <div class="metric-row" style="border-bottom: none; padding-top: 4px;">
+                        <span class="metric-label">Profit at 70%</span>
+                        <span class="metric-value" id="profit70">$0</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer">Made with ♥ for Smart Investors</div>
+    </div>
+
+    <script>
+        function formatCurrency(num) {
+            return '$' + Math.round(num).toLocaleString('en-US');
+        }
+
+        function formatPercent(num) {
+            return num.toFixed(1) + '%';
+        }
+
+        function toggleRehabInput() {
+            var repairLevel = document.getElementById('repairLevel').value;
+            var exactRehabGroup = document.getElementById('exactRehabGroup');
+            if (repairLevel === 'Other') {
+                exactRehabGroup.style.display = 'block';
+            } else {
+                exactRehabGroup.style.display = 'none';
+            }
+        }
+
+        function toggleSection(section) {
+            var content = document.getElementById(section + 'Content');
+            var icon = document.getElementById(section + 'Icon');
+            
+            if (content.classList.contains('open')) {
+                content.classList.remove('open');
+                icon.classList.remove('open');
+            } else {
+                content.classList.add('open');
+                icon.classList.add('open');
+            }
+        }
+
+        function calculate() {
+            try {
+                // Get inputs
+                var arv = parseFloat(document.getElementById('arv').value) || 0;
+                var purchasePrice = parseFloat(document.getElementById('purchasePrice').value) || 0;
+                var squareFeet = parseFloat(document.getElementById('squareFeet').value) || 0;
+                var repairLevel = document.getElementById('repairLevel').value;
+                var exactRehab = parseFloat(document.getElementById('exactRehab').value) || 0;
+                var interestRate = (parseFloat(document.getElementById('interestRate').value) || 0) / 100;
+                var loanPoints = (parseFloat(document.getElementById('loanPoints').value) || 0) / 100;
+                var downPayment = (parseFloat(document.getElementById('downPayment').value) || 0) / 100;
+                var holdMonths = parseFloat(document.getElementById('holdMonths').value) || 0;
+                var sellerCommission = (parseFloat(document.getElementById('sellerCommission').value) || 0) / 100;
+                var buyerCC = (parseFloat(document.getElementById('buyerCC').value) || 0) / 100;
+
+                // Calculate rehab
+                var rehabCost;
+                if (repairLevel === 'Basic') {
+                    rehabCost = squareFeet * 40;
+                } else if (repairLevel === 'Medium') {
+                    rehabCost = squareFeet * 55;
+                } else if (repairLevel === 'Everything') {
+                    rehabCost = squareFeet * 90;
+                } else {
+                    rehabCost = exactRehab;
+                }
+
+                // Calculate financing
+                var loanAmount = purchasePrice * (1 - downPayment);
+                var pointsCost = loanAmount * loanPoints;
+                var interestCost = (loanAmount * interestRate / 12) * holdMonths;
+                var costOfMoney = pointsCost + interestCost;
+
+                // Calculate costs
+                var purchaseCosts = purchasePrice * 0.0055 + 400;
+                var salesCosts = arv * 0.0055 + 400;
+                var sellerAgentCost = arv * sellerCommission;
+                var buyerCosts = arv * buyerCC;
+
+                // Calculate profit
+                var netProfit = arv - purchasePrice - rehabCost - costOfMoney - 
+                                purchaseCosts - salesCosts - sellerAgentCost - buyerCosts;
+
+                // Calculate metrics
+                var profitPctOfPrice = (netProfit / purchasePrice) * 100;
+                var profitPctOfRehab = (netProfit / rehabCost) * 100;
+                var pricePerSF = arv / squareFeet;
+                var totalCosts = purchasePrice + rehabCost + costOfMoney + 
+                                 purchaseCosts + salesCosts + sellerAgentCost + buyerCosts;
+                var cashRequired = (purchasePrice * downPayment) + rehabCost;
+
+                // Calculate rules
+                var target80 = (arv * 0.8) - rehabCost;
+                var profit80 = arv - target80 - rehabCost - costOfMoney - 
+                               purchaseCosts - salesCosts - sellerAgentCost - buyerCosts;
+                
+                var target70 = (arv * 0.7) - rehabCost;
+                var profit70 = arv - target70 - rehabCost - costOfMoney - 
+                               purchaseCosts - salesCosts - sellerAgentCost - buyerCosts;
+
+                // Update UI
+                document.getElementById('netProfit').textContent = formatCurrency(netProfit);
+                document.getElementById('cashRequired').textContent = formatCurrency(cashRequired);
+                
+                var profitCard = document.getElementById('profitCard');
+                if (netProfit < 0) {
+                    profitCard.classList.add('result-negative');
+                } else {
+                    profitCard.classList.remove('result-negative');
+                }
+
+                // Key Metrics
+                document.getElementById('totalRehab').textContent = formatCurrency(rehabCost);
+                document.getElementById('profitPctPrice').textContent = formatPercent(profitPctOfPrice);
+                document.getElementById('profitPctRehab').textContent = formatPercent(profitPctOfRehab);
+                document.getElementById('pricePerSF').textContent = formatCurrency(pricePerSF);
+                document.getElementById('totalCost').textContent = formatCurrency(totalCosts);
+
+                // Cost Breakdown
+                document.getElementById('detailPurchase').textContent = formatCurrency(purchasePrice);
+                document.getElementById('detailRehab').textContent = formatCurrency(rehabCost);
+                document.getElementById('detailFinancing').textContent = formatCurrency(costOfMoney);
+                document.getElementById('detailPurchaseCosts').textContent = formatCurrency(purchaseCosts);
+                document.getElementById('detailSalesCosts').textContent = formatCurrency(salesCosts);
+                document.getElementById('detailSeller').textContent = formatCurrency(sellerAgentCost);
+                document.getElementById('detailBuyer').textContent = formatCurrency(buyerCosts);
+
+                // Rules
+                document.getElementById('target80').textContent = formatCurrency(target80);
+                document.getElementById('vs80').textContent = formatCurrency(purchasePrice - target80);
+                document.getElementById('profit80').textContent = formatCurrency(profit80);
+                
+                document.getElementById('target70').textContent = formatCurrency(target70);
+                document.getElementById('vs70').textContent = formatCurrency(purchasePrice - target70);
+                document.getElementById('profit70').textContent = formatCurrency(profit70);
+                
+            } catch (error) {
+                alert('Error calculating: ' + error.message);
+            }
+        }
+
+        // Initial calculation on page load
+        window.onload = function() {
+            // Test if JavaScript is working
+            document.getElementById('jsTest').textContent = '✅ JavaScript Working!';
+            document.getElementById('jsTest').style.color = 'lightgreen';
+            
+            toggleRehabInput();
+            calculate();
+        };
+    </script>
+</body>
+</html>
